@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NÁZEV | Profesionální stavební technika</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        ::selection {
+            background: #000;
+            color: #fff;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+        
+        .img-zoom {
+            overflow: hidden;
+        }
+        .img-zoom img {
+            transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .img-zoom:hover img {
+            transform: scale(1.05);
+        }
+        
+        .reveal-text {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-text.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .line-draw {
+            width: 0;
+            transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .line-draw.active {
+            width: 100%;
+        }
+        
+        .menu-overlay {
+            clip-path: inset(0 0 100% 0);
+            transition: clip-path 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .menu-overlay.open {
+            clip-path: inset(0 0 0 0);
+        }
+        
+        .stagger-children > * {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .stagger-children.active > *:nth-child(1) { transition-delay: 0.1s; opacity: 1; transform: translateY(0); }
+        .stagger-children.active > *:nth-child(2) { transition-delay: 0.2s; opacity: 1; transform: translateY(0); }
+        .stagger-children.active > *:nth-child(3) { transition-delay: 0.3s; opacity: 1; transform: translateY(0); }
+        .stagger-children.active > *:nth-child(4) { transition-delay: 0.4s; opacity: 1; transform: translateY(0); }
+        .stagger-children.active > *:nth-child(5) { transition-delay: 0.5s; opacity: 1; transform: translateY(0); }
+        .stagger-children.active > *:nth-child(6) { transition-delay: 0.6s; opacity: 1; transform: translateY(0); }
+        
+        .counter {
+            font-variant-numeric: tabular-nums;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #000;
+        }
+        
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+        }
+        .btn-primary:hover::after {
+            transform: translateY(0);
+        }
+        .btn-primary:hover {
+            color: #fff;
+        }
+
+        /* Solid navbar - always visible */
+        .navbar-solid {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-white text-black antialiased">
+
+    <!-- Navigation - VŽDY VIDITELNÝ -->
+    <nav class="fixed top-0 left-0 right-0 z-50 navbar-solid" id="navbar">
+        <div class="max-w-[1800px] mx-auto px-6 lg:px-12">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <a href="#" class="flex items-baseline gap-2">
+                    <span class="text-2xl font-bold tracking-tight font-['Space_Grotesk'] text-black">NAZEV</span>
+                    <span class="text-2xl font-light tracking-tight font-['Space_Grotesk'] text-black">SPOLEČNOSTI</span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex items-center gap-12">
+                    <a href="#sluzby" class="text-sm font-semibold text-black tracking-wide hover:text-orange-600 transition-colors">Služby</a>
+                    <a href="#technika" class="text-sm font-semibold text-black tracking-wide hover:text-orange-600 transition-colors">Technika</a>
+                    <a href="#o-nas" class="text-sm font-semibold text-black tracking-wide hover:text-orange-600 transition-colors">O nás</a>
+                    <a href="#kontakt" class="text-sm font-semibold text-black tracking-wide hover:text-orange-600 transition-colors">Kontakt</a>
+                </div>
+
+                <!-- CTA -->
+                <div class="hidden lg:block">
+                    <a href="#kontakt" class="text-sm font-semibold bg-orange-600 text-white px-6 py-3 rounded-full hover:bg-orange-700 transition-all duration-300 shadow-lg shadow-orange-600/20">
+                        Poptat zdarma
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMenu()" class="lg:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5">
+                    <span class="w-6 h-0.5 bg-black transition-all" id="menu-line-1"></span>
+                    <span class="w-6 h-0.5 bg-black transition-all" id="menu-line-2"></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="menu-overlay" class="menu-overlay fixed inset-0 z-40 bg-white flex items-center justify-center">
+        <div class="text-center space-y-8">
+            <a href="#sluzby" onclick="toggleMenu()" class="block text-4xl font-light text-black hover:text-orange-600 transition-colors">Služby</a>
+            <a href="#technika" onclick="toggleMenu()" class="block text-4xl font-light text-black hover:text-orange-600 transition-colors">Technika</a>
+            <a href="#o-nas" onclick="toggleMenu()" class="block text-4xl font-light text-black hover:text-orange-600 transition-colors">O nás</a>
+            <a href="#kontakt" onclick="toggleMenu()" class="block text-4xl font-light text-black hover:text-orange-600 transition-colors">Kontakt</a>
+        </div>
+    </div>
+
+    <!-- Hero Section - padding-top pro navbar -->
+    <section class="relative h-screen bg-black text-white overflow-hidden pt-20">
+        <!-- Background Image -->
+        <div class="absolute inset-0 pt-20">
+            <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1920&q=80" 
+                 alt="Construction crane" 
+                 class="w-full h-full object-cover opacity-60">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30"></div>
+        </div>
+
+        <!-- Content -->
+        <div class="relative z-10 h-full flex flex-col justify-end pb-24 px-6 lg:px-12 max-w-[1800px] mx-auto">
+            <div class="max-w-4xl">
+                <p class="text-sm tracking-[0.3em] uppercase text-black-400 mb-6 reveal-text">
+                    Profesionální stavební technika od roku 2004
+                </p>
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.9] mb-8 reveal-text font-['Space_Grotesk']">
+                    Postavíme<br>
+                    <span class="font-light italic">vaši budoucnost</span>
+                </h1>
+                <div class="flex flex-wrap gap-8 text-sm tracking-wide reveal-text">
+                    <div class="flex items-center gap-2">
+                        <span class="w-12 h-px bg-white"></span>
+                        <span>150+ strojů</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-12 h-px bg-white"></span>
+                        <span>Nonstop provoz</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-12 h-px bg-white"></span>
+                        <span>Celá ČR</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-8 right-12 hidden lg:block">
+            <div class="w-px h-24 bg-white/30 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full bg-white h-1/3 animate-[slideDown_2s_ease-in-out_infinite]"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="sluzby" class="py-32 lg:py-40 bg-white">
+        <div class="max-w-[1800px] mx-auto px-6 lg:px-12">
+            <!-- Header -->
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-24 mb-20">
+                <div>
+                    <p class="text-sm tracking-[0.2em] uppercase text-gray-500 mb-4 reveal-text">Naše služby</p>
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight reveal-text font-['Space_Grotesk']">
+                        Komplexní řešení pro stavebnictví
+                    </h2>
+                </div>
+                <div class="lg:pt-16">
+                    <p class="text-lg text-gray-600 leading-relaxed reveal-text">
+                        Poskytujeme pronájem moderní stavební techniky s obsluhou i bez. 
+                        Specializujeme se na jeřáby, bagry a těžkou dopravu. 
+                        Disponujeme vlastním servisem a dopravou.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Service Cards -->
+            <div class="space-y-1 stagger-children">
+                <!-- Jeřáby -->
+                <div class="group border-t border-gray-200 py-12 lg:py-16 cursor-pointer hover:bg-gray-50 transition-colors" onclick="showDetail('jeraby')">
+                    <div class="grid lg:grid-cols-12 gap-8 items-center">
+                        <div class="lg:col-span-1">
+                            <span class="text-sm text-gray-400">01</span>
+                        </div>
+                        <div class="lg:col-span-4">
+                            <h3 class="text-3xl lg:text-4xl font-bold mb-2 font-['Space_Grotesk']">Jeřáby</h3>
+                            <p class="text-gray-500">Autojeřáby & věžové jeřáby</p>
+                        </div>
+                        <div class="lg:col-span-5">
+                            <p class="text-gray-600 leading-relaxed">
+                                Autojeřáby nosnosti 20-80 tun, věžové jeřáby a speciální zdvihací technika. 
+                                Precizní práce s moderními stroji Liebherr a Tadano.
+                            </p>
+                        </div>
+                        <div class="lg:col-span-2 flex justify-end">
+                            <div class="w-12 h-12 rounded-full border border-black flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hidden lg:block h-0 group-hover:h-64 overflow-hidden transition-all duration-500 mt-0 group-hover:mt-8">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1200&q=80" 
+                             alt="Jeřáb detail" 
+                             class="w-full h-full object-cover">
+                    </div>
+                </div>
+
+                <!-- Bagry -->
+                <div class="group border-t border-gray-200 py-12 lg:py-16 cursor-pointer hover:bg-gray-50 transition-colors" onclick="showDetail('bagry')">
+                    <div class="grid lg:grid-cols-12 gap-8 items-center">
+                        <div class="lg:col-span-1">
+                            <span class="text-sm text-gray-400">02</span>
+                        </div>
+                        <div class="lg:col-span-4">
+                            <h3 class="text-3xl lg:text-4xl font-bold mb-2 font-['Space_Grotesk']">Bagry</h3>
+                            <p class="text-gray-500">Pásové & kolové rypadla</p>
+                        </div>
+                        <div class="lg:col-span-5">
+                            <p class="text-gray-600 leading-relaxed">
+                                Pásové a kolové bagry, minibagry, demoliční technika. 
+                                Výkopové práce, terénní úpravy, demolice s precizním GPS řízením.
+                            </p>
+                        </div>
+                        <div class="lg:col-span-2 flex justify-end">
+                            <div class="w-12 h-12 rounded-full border border-black flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hidden lg:block h-0 group-hover:h-64 overflow-hidden transition-all duration-500 mt-0 group-hover:mt-8">
+                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&q=80" 
+                             alt="Bagr detail" 
+                             class="w-full h-full object-cover">
+                    </div>
+                </div>
+
+                <!-- Doprava -->
+                <div class="group border-t border-b border-gray-200 py-12 lg:py-16 cursor-pointer hover:bg-gray-50 transition-colors" onclick="showDetail('doprava')">
+                    <div class="grid lg:grid-cols-12 gap-8 items-center">
+                        <div class="lg:col-span-1">
+                            <span class="text-sm text-gray-400">03</span>
+                        </div>
+                        <div class="lg:col-span-4">
+                            <h3 class="text-3xl lg:text-4xl font-bold mb-2 font-['Space_Grotesk']">Autodoprava</h3>
+                            <p class="text-gray-500">Těžká doprava & kontejnery</p>
+                        </div>
+                        <div class="lg:col-span-5">
+                            <p class="text-gray-600 leading-relaxed">
+                                Přeprava nadrozměrných nákladů, kontejnerová doprava 12-20m³, 
+                                odvoz zeminy. Kompletní servis včetně povolení.
+                            </p>
+                        </div>
+                        <div class="lg:col-span-2 flex justify-end">
+                            <div class="w-12 h-12 rounded-full border border-black flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hidden lg:block h-0 group-hover:h-64 overflow-hidden transition-all duration-500 mt-0 group-hover:mt-8">
+                        <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=1200&q=80" 
+                             alt="Doprava detail" 
+                             class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Image Section -->
+    <section class="h-[70vh] relative img-zoom">
+        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1920&q=80" 
+             alt="Heavy machinery at work" 
+             class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-black/20"></div>
+        <div class="absolute bottom-12 left-6 lg:left-12 text-white">
+            <p class="text-sm tracking-[0.2em] uppercase mb-2">Reference 2026</p>
+            <h3 class="text-3xl lg:text-4xl font-bold font-['Space_Grotesk']">Možnost přidat vaše recenze od společnosti.</h3>
+        </div>
+    </section>
+
+    <!-- Equipment Grid -->
+    <section id="technika" class="py-32 lg:py-40 bg-gray-50">
+        <div class="max-w-[1800px] mx-auto px-6 lg:px-12">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
+                <div>
+                    <p class="text-sm tracking-[0.2em] uppercase text-gray-500 mb-4 reveal-text">Technika</p>
+                    <h2 class="text-4xl md:text-5xl font-bold reveal-text font-['Space_Grotesk']">Ukázky stojů - FOTKY SE ZMENI.</h2>
+                </div>
+                <a href="#kontakt" class="text-sm font-medium border-b border-black pb-1 hover:opacity-60 transition-opacity reveal-text">
+                    Kompletní katalog strojů →
+                </a>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
+                <!-- Item 1 -->
+                <div class="group bg-white">
+                    <div class="aspect-[4/3] overflow-hidden mb-6">
+                        <img src="https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=800&q=80" 
+                             alt="Liebherr LTM" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                    </div>
+                    <div class="px-2">
+                        <h4 class="text-xl font-bold mb-1 font-['Space_Grotesk']">Liebherr LTM 1050-3.1</h4>
+                        <p class="text-gray-500 text-sm mb-3">Autojeřáb 50t</p>
+                        <div class="flex gap-4 text-xs text-gray-400">
+                            <span>38m dostup</span>
+                            <span>•</span>
+                            <span>40m výložník</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="group bg-white">
+                    <div class="aspect-[4/3] overflow-hidden mb-6">
+                        <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800&q=80" 
+                             alt="Caterpillar 320" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                    </div>
+                    <div class="px-2">
+                        <h4 class="text-xl font-bold mb-1 font-['Space_Grotesk']">Caterpillar 320</h4>
+                        <p class="text-gray-500 text-sm mb-3">Pásový bagr 22t</p>
+                        <div class="flex gap-4 text-xs text-gray-400">
+                            <span>GPS řízení</span>
+                            <span>•</span>
+                            <span>3D modelování</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="group bg-white">
+                    <div class="aspect-[4/3] overflow-hidden mb-6">
+                        <img src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=800&q=80" 
+                             alt="Mercedes Actros" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                    </div>
+                    <div class="px-2">
+                        <h4 class="text-xl font-bold mb-1 font-['Space_Grotesk']">Mercedes Actros 8x4</h4>
+                        <p class="text-gray-500 text-sm mb-3">Kontejnerová doprava</p>
+                        <div class="flex gap-4 text-xs text-gray-400">
+                            <span>20t nosnost</span>
+                            <span>•</span>
+                            <span>20m³ kontejner</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="group bg-white">
+                    <div class="aspect-[4/3] overflow-hidden mb-6">
+                        <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80" 
+                             alt="Tower crane" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                    </div>
+                    <div class="px-2">
+                        <h4 class="text-xl font-bold mb-1 font-['Space_Grotesk']">Potain MDT 389</h4>
+                        <p class="text-gray-500 text-sm mb-3">Věžový jeřáb</p>
+                        <div class="flex gap-4 text-xs text-gray-400">
+                            <span>16t nosnost</span>
+                            <span>•</span>
+                            <span>75m výška</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 5 -->
+                <div class="group bg-white">
+                    <div class="aspect-[4/3] overflow-hidden mb-6">
+                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80" 
+                             alt="Mini excavator" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                    </div>
+                    <div class="px-2">
+                        <h4 class="text-xl font-bold mb-1 font-['Space_Grotesk']">Kubota U55-4</h4>
+                        <p class="text-gray-500 text-sm mb-3">Minibagr 5.5t</p>
+                        <div class="flex gap-4 text-xs text-gray-400">
+                            <span>Zero swing</span>
+                            <span>•</span>
+                            <span>Úzký profil</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 6 -->
+                <div class="group bg-white">
+                    <div class="aspect-[4/3] overflow-hidden mb-6">
+                        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80" 
+                             alt="Truck with crane" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                    </div>
+                    <div class="px-2">
+                        <h4 class="text-xl font-bold mb-1 font-['Space_Grotesk']">MAN TGS + HR</h4>
+                        <p class="text-gray-500 text-sm mb-3">Valník s HR</p>
+                        <div class="flex gap-4 text-xs text-gray-400">
+                            <span>Hydraulická ruka</span>
+                            <span>•</span>
+                            <span>Precizní manipulace</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About / Numbers -->
+    <section id="o-nas" class="py-32 lg:py-40 bg-white">
+        <div class="max-w-[1800px] mx-auto px-6 lg:px-12">
+            <div class="grid lg:grid-cols-2 gap-16 lg:gap-24">
+                <div>
+                    <p class="text-sm tracking-[0.2em] uppercase text-gray-500 mb-4 reveal-text">O nás</p>
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 reveal-text font-['Space_Grotesk']">
+                        20 let zkušeností<br>
+                        <span class="font-light">na trhu</span>
+                    </h2>
+                    <div class="w-24 h-px bg-black mb-8 line-draw"></div>
+                    <p class="text-lg text-gray-600 leading-relaxed mb-8 reveal-text">
+                        Od roku 2004 poskytujeme profesionální služby v oblasti pronájmu stavební techniky. 
+                        Začali jsme s jedním jeřábem, dnes disponujeme 150+ stroji a týmem 80 specialistů.
+                    </p>
+                    <p class="text-gray-600 leading-relaxed reveal-text">
+                        Našimi klienty jsou přední stavební společnosti včetně Skanska, Metrostav nebo Strabag. 
+                        Klademe důraz na bezpečnost, preciznost a termínovou spolehlivost.
+                    </p>
+                </div>
+
+                <div class="lg:pt-24">
+                    <div class="grid grid-cols-2 gap-12">
+                        <div class="reveal-text">
+                            <div class="text-5xl lg:text-6xl font-bold mb-2 counter font-['Space_Grotesk']">150+</div>
+                            <div class="text-gray-500">Strojů v parku</div>
+                        </div>
+                        <div class="reveal-text">
+                            <div class="text-5xl lg:text-6xl font-bold mb-2 counter font-['Space_Grotesk']">80</div>
+                            <div class="text-gray-500">Zaměstnanců</div>
+                        </div>
+                        <div class="reveal-text">
+                            <div class="text-5xl lg:text-6xl font-bold mb-2 counter font-['Space_Grotesk']">500+</div>
+                            <div class="text-gray-500">Projektů ročně</div>
+                        </div>
+                        <div class="reveal-text">
+                            <div class="text-5xl lg:text-6xl font-bold mb-2 counter font-['Space_Grotesk']">0</div>
+                            <div class="text-gray-500">Vážných úrazů</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-16 pt-8 border-t border-gray-200 reveal-text">
+                        <p class="text-sm text-gray-400 mb-4">Certifikace</p>
+                        <div class="flex flex-wrap gap-8 text-sm font-medium">
+                            <span>ISO 9001</span>
+                            <span>ISO 14001</span>
+                            <span>OHSAS 18001</span>
+                            <span>ČSN EN 1090</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="py-32 lg:py-40 bg-black text-white">
+        <div class="max-w-[1800px] mx-auto px-6 lg:px-12">
+            <div class="text-center mb-20">
+                <p class="text-sm tracking-[0.2em] uppercase text-gray-500 mb-4 reveal-text">Ceník</p>
+                <h2 class="text-4xl md:text-5xl font-bold reveal-text font-['Space_Grotesk']">Transparentní ceny</h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-px bg-gray-800 stagger-children">
+                <!-- Basic -->
+                <div class="bg-black p-8 lg:p-12 group hover:bg-gray-900 transition-colors">
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-bold mb-2 font-['Space_Grotesk']">Krátkodobý pronájem</h3>
+                        <p class="text-gray-400 text-sm">1-7 dní</p>
+                    </div>
+                    <div class="mb-8">
+                        <span class="text-4xl font-bold font-['Space_Grotesk']">od 2 500 Kč</span>
+                        <span class="text-gray-500">/den</span>
+                    </div>
+                    <ul class="space-y-4 text-sm text-gray-400 mb-8">
+                        <li class="flex items-center gap-3">
+                            <span class="w-1 h-1 bg-white rounded-full"></span>
+                            Obsluha v ceně
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-1 h-1 bg-white rounded-full"></span>
+                            Doprava do 50km
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-1 h-1 bg-white rounded-full"></span>
+                            Pojištění stroje
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-1 h-1 bg-white rounded-full"></span>
+                            Základní servis
+                        </li>
+                    </ul>
+                    <button onclick="scrollToSection('kontakt')" class="w-full py-4 border border-white/30 rounded-full hover:bg-white hover:text-black transition-all text-sm font-medium">
+                        Poptat
+                    </button>
+                </div>
+
+                <!-- Standard -->
+                <div class="bg-black p-8 lg:p-12 group hover:bg-gray-900 transition-colors relative">
+                    <div class="absolute top-0 right-8 bg-white text-black text-xs font-bold px-3 py-1">
+                        POPULÁRNÍ
+                    </div>
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-bold mb-2 font-['Space_Grotesk']">Měsíční pronájem</h3>
+                        <p class="text-gray-400 text-sm">30+ dní</p>
+                    </div>
+                    <div class="mb-8">
+                        <span class="text-4xl font-bold font-['Space_Grotesk']">od 55 000 Kč</span>
+                        <span class="text-gray-500">/měsíc</span>
+                    </div>
+                    <ul class="space-y-4 text-sm text-gray-400 mb-8">
+                        <li class="flex items-center gap-3">
+                            <span class="w-1 h-1 bg-white rounded-full"></span>
+                            Sleva až 25%
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-1 h-1 bg-white rounded-full"></span>
+                            Prioritní servis 24/7
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-1 h-1 bg-white rounded-full"></span>
+                            Výměna stroje zdarma
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-1 h-1 bg-white rounded-full"></span>
+                            Dedikovaný manažer
+                        </li>
+                    </ul>
+                    <button onclick="scrollToSection('kontakt')" class="w-full py-4 bg-white text-black rounded-full hover:bg-gray-200 transition-all text-sm font-medium">
+                        Poptat
+                    </button>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="bg-black p-8 lg:p-12 group hover:bg-gray-900 transition-colors">
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-bold mb-2 font-['Space_Grotesk']">Projektové řešení</h3>
+                        <p class="text-gray-400 text-sm">Individuální</p>
+                    </div>
+                    <div class="mb-8">
+                        <span class="text-4xl font-bold font-['Space_Grotesk']">Na dotaz</span>
+                    </div>
+                    <ul class="space-y-4 text-sm text-gray-400 mb-8">
+                        <li class="flex items-center gap-3">
+                            <span class="w-1 h-1 bg-white rounded-full"></span>
+                            Kompletní realizace
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-1 h-1 bg-white rounded-full"></span>
+                            Více strojů najednou
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-1 h-1 bg-white rounded-full"></span>
+                            Projektový manažer
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-1 h-1 bg-white rounded-full"></span>
+                            Flexibilní podmínky
+                        </li>
+                    </ul>
+                    <button onclick="scrollToSection('kontakt')" class="w-full py-4 border border-white/30 rounded-full hover:bg-white hover:text-black transition-all text-sm font-medium">
+                        Konzultace zdarma
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="kontakt" class="py-32 lg:py-40 bg-gray-100">
+        <div class="max-w-[1800px] mx-auto px-6 lg:px-12">
+            <div class="grid lg:grid-cols-2 gap-16 lg:gap-24">
+                <div>
+                    <p class="text-sm tracking-[0.2em] uppercase text-gray-500 mb-4 reveal-text">Kontakt</p>
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 reveal-text font-['Space_Grotesk']">
+                        Pojďme se<br>sejít
+                    </h2>
+                    <p class="text-lg text-gray-600 leading-relaxed mb-12 reveal-text">
+                        Zavolejte nám nebo vyplňte formulář. Odpovíme do 2 hodin v pracovní době, 
+                        nonstop pro akutní případy.
+                    </p>
+
+                    <div class="space-y-8 reveal-text">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-black rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Nonstop linka</p>
+                                <a href="tel:+420123456789" class="text-2xl font-bold hover:text-gray-600 transition-colors font-['Space_Grotesk']">+420 123 456 789</a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-black rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Email</p>
+                                <a href="mailto:info@nazev.cz" class="text-xl font-medium hover:text-gray-600 transition-colors">info@nazev.cz</a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-black rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Adresa</p>
+                                <p class="text-lg font-medium">Ulice 123, 190 00 Praha 9<br>Česká republika</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-black rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Provozní doba</p>
+                                <p class="text-lg font-medium">Po-Pá: 7:00 - 17:00<br><span class="text-orange-600">Nonstop pro stroje</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:pt-16 reveal-text">
+                    <form id="contactForm" onsubmit="handleSubmit(event)" class="bg-white p-8 lg:p-12 rounded-2xl shadow-sm">
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm text-gray-500 mb-2">Jméno *</label>
+                                <input type="text" required class="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:border-black focus:ring-1 focus:ring-black transition-colors" placeholder="Jan Novák">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-500 mb-2">Telefon *</label>
+                                <input type="tel" required class="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:border-black focus:ring-1 focus:ring-black transition-colors" placeholder="+420 123 456 789">
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="block text-sm text-gray-500 mb-2">Email</label>
+                            <input type="email" class="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:border-black focus:ring-1 focus:ring-black transition-colors" placeholder="jan@firma.cz">
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm text-gray-500 mb-2">Typ služby</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:border-black focus:ring-1 focus:ring-black transition-colors">
+                                    <option>Jeřáb</option>
+                                    <option>Bagr</option>
+                                    <option>Autodoprava</option>
+                                    <option>Kombinace</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-500 mb-2">Termín</label>
+                                <input type="date" class="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:border-black focus:ring-1 focus:ring-black transition-colors">
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="block text-sm text-gray-500 mb-2">Zpráva</label>
+                            <textarea rows="4" class="w-full border border-gray-300 rounded-lg px-4 py-3 bg-white focus:border-black focus:ring-1 focus:ring-black transition-colors resize-none" placeholder="Popište váš projekt..."></textarea>
+                        </div>
+
+                        <div class="flex items-start gap-3 mb-8">
+                            <input type="checkbox" required id="gdpr" class="mt-1 w-4 h-4 border-gray-300 rounded text-black focus:ring-black">
+                            <label for="gdpr" class="text-sm text-gray-500">
+                                Souhlasím se zpracováním osobních údajů *
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-primary w-full bg-black text-white py-4 rounded-full font-medium hover:bg-gray-800 transition-all relative z-10">
+                            Odeslat poptávku
+                        </button>
+
+                        <div id="formSuccess" class="hidden bg-green-50 text-green-700 p-4 rounded-lg text-center mt-4">
+                            Děkujeme! Budeme vás kontaktovat do 2 hodin.
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white py-12 border-t border-gray-200">
+        <div class="max-w-[1800px] mx-auto px-6 lg:px-12">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-baseline gap-2">
+                    <span class="text-xl font-bold font-['Space_Grotesk']">NÁZEV</span>
+                    <span class="text-xl font-light font-['Space_Grotesk']">SPOLEČNOSTI</span>
+                </div>
+                
+                <div class="flex gap-8 text-sm text-gray-500">
+                    <a href="#" class="hover:text-black transition-colors">GDPR</a>
+                    <a href="#" class="hover:text-black transition-colors">Obchodní podmínky</a>
+                    <a href="#" class="hover:text-black transition-colors">Cookies</a>
+                </div>
+
+                <div class="text-sm text-gray-400">
+                    © 2024 NAZEV SPOLEČNOSTI s.r.o.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/90" onclick="closeDetail()"></div>
+        <div class="absolute inset-x-0 bottom-0 md:inset-0 md:flex md:items-center md:justify-center p-4">
+            <div class="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-t-2xl md:rounded-2xl p-8 md:p-12 relative">
+                <button onclick="closeDetail()" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+                <div id="modalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Menu toggle
+        function toggleMenu() {
+            const overlay = document.getElementById('menu-overlay');
+            const line1 = document.getElementById('menu-line-1');
+            const line2 = document.getElementById('menu-line-2');
+            
+            overlay.classList.toggle('open');
+            
+            if (overlay.classList.contains('open')) {
+                line1.style.transform = 'rotate(45deg) translate(5px, 5px)';
+                line2.style.transform = 'rotate(-45deg) translate(5px, -5px)';
+                document.body.style.overflow = 'hidden';
+            } else {
+                line1.style.transform = 'none';
+                line2.style.transform = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-text, .stagger-children, .line-draw').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Smooth scroll
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Detail modal
+        const details = {
+            jeraby: {
+                title: 'Jeřáby',
+                subtitle: 'Autojeřáby & věžové jeřáby',
+                image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1200&q=80',
+                content: `
+                    <h2 class="text-3xl font-bold mb-4 font-['Space_Grotesk']">Jeřáby</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Nabízíme širokou škálu jeřábů od 20 do 80 tun. Všechny stroje jsou vybaveny 
+                        moderní bezpečnostní technologií a jsou pravidelně servisovány.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="border border-gray-200 p-4">
+                            <div class="text-sm text-gray-500 mb-1">Nosnost</div>
+                            <div class="font-bold">20-80 tun</div>
+                        </div>
+                        <div class="border border-gray-200 p-4">
+                            <div class="text-sm text-gray-500 mb-1">Dostup</div>
+                            <div class="font-bold">30-60 metrů</div>
+                        </div>
+                        <div class="border border-gray-200 p-4">
+                            <div class="text-sm text-gray-500 mb-1">Výložník</div>
+                            <div class="font-bold">30-50 metrů</div>
+                        </div>
+                        <div class="border border-gray-200 p-4">
+                            <div class="text-sm text-gray-500 mb-1">Otoč</div>
+                            <div class="font-bold">360°</div>
+                        </div>
+                    </div>
+                    <button onclick="closeDetail(); scrollToSection('kontakt')" class="w-full bg-black text-white py-4 rounded-full font-medium hover:bg-gray-800 transition-colors">
+                        Poptat jeřáb
+                    </button>
+                `
+            },
+            bagry: {
+                title: 'Bagry a rypadla',
+                subtitle: 'Pásové & kolové rypadla',
+                image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&q=80',
+                content: `
+                    <h2 class="text-3xl font-bold mb-4 font-['Space_Grotesk']">Bagry a rypadla</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Pásové i kolové bagry všech velikostí, včetně speciálních demoličních verzí. 
+                        Všechny stroje mají klimatizované kabiny a GPS přesnost.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="border border-gray-200 p-4">
+                            <div class="text-sm text-gray-500 mb-1">Třída</div>
+                            <div class="font-bold">1.5-40 tun</div>
+                        </div>
+                        <div class="border border-gray-200 p-4">
+                            <div class="text-sm text-gray-500 mb-1">Dosah</div>
+                            <div class="font-bold">6-12 metrů</div>
+                        </div>
+                        <div class="border border-gray-200 p-4">
+                            <div class="text-sm text-gray-500 mb-1">Hloubka kopu</div>
+                            <div class="font-bold">3-7 metrů</div>
+                        </div>
+                        <div class="border border-gray-200 p-4">
+                            <div class="text-sm text-gray-500 mb-1">Příslušenství</div>
+                            <div class="font-bold">Lžíce, kladiva, nůžky</div>
+                        </div>
+                    </div>
+                    <button onclick="closeDetail(); scrollToSection('kontakt')" class="w-full bg-black text-white py-4 rounded-full font-medium hover:bg-gray-800 transition-colors">
+                        Poptat bagr
+                    </button>
+                `
+            },
+            doprava: {
+                title: 'Autodoprava',
+                subtitle: 'Těžká doprava & kontejnery',
+                image: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=1200&q=80',
+                content: `
+                    <h2 class="text-3xl font-bold mb-4 font-['Space_Grotesk']">Autodoprava</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Specializujeme se na přepravu nadrozměrných nákladů a kontejnerovou dopravu. 
+                        Disponujeme povoleními pro celou EU.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="border border-gray-200 p-4">
+                            <div class="text-sm text-gray-500 mb-1">Nosnost</div>
+                            <div class="font-bold">Do 40 tun</div>
+                        </div>
+                        <div class="border border-gray-200 p-4">
+                            <div class="text-sm text-gray-500 mb-1">Kontejnery</div>
+                            <div class="font-bold">12-20 m³</div>
+                        </div>
+                        <div class="border border-gray-200 p-4">
+                            <div class="text-sm text-gray-500 mb-1">Nadrozměrné</div>
+                            <div class="font-bold">Ano</div>
+                        </div>
+                        <div class="border border-gray-200 p-4">
+                            <div class="text-sm text-gray-500 mb-1">Povolení</div>
+                            <div class="font-bold">Včetně</div>
+                        </div>
+                    </div>
+                    <button onclick="closeDetail(); scrollToSection('kontakt')" class="w-full bg-black text-white py-4 rounded-full font-medium hover:bg-gray-800 transition-colors">
+                        Poptat dopravu
+                    </button>
+                `
+            }
+        };
+
+        function showDetail(type) {
+            if (window.innerWidth < 1024) {
+                scrollToSection('kontakt');
+                return;
+            }
+            
+            const modal = document.getElementById('detailModal');
+            const content = document.getElementById('modalContent');
+            const detail = details[type];
+            
+            content.innerHTML = detail.content;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDetail() {
+            document.getElementById('detailModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Form handling
+        function handleSubmit(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            
+            btn.textContent = 'Odesílání...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                document.getElementById('formSuccess').classList.remove('hidden');
+                btn.textContent = 'Odesláno';
+                e.target.reset();
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }, 3000);
+            }, 1500);
+        }
+
+        // Add slideDown animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                0% { transform: translateY(-100%); }
+                100% { transform: translateY(400%); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
